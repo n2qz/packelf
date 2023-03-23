@@ -25,12 +25,12 @@ if ! (touch "\$check_path" && chmod +x "\$check_path" && [ -x "\$check_path" ]);
     rm -rf "\$tmp_dir"
     tmp_dir="\$(TMPDIR="\$(pwd)" mktemp -d)"
 fi
-sed '1,/^#__END__$/d' "\$0" | tar -xz -C "\$tmp_dir"
+sed '1,/^#__END__$/d' "\$0" | tar -x -C "\$tmp_dir"
 sed -i 's@/etc/ld.so.preload@/etc/___so.preload@g' "\$tmp_dir/$ld_so"
 "\$tmp_dir/$ld_so" --library-path "\$tmp_dir" "\$tmp_dir/$program" "\$@"
 exit \$?
 #__END__
 EOF
 
-tar -czh --transform 's/.*\///g' "$src" $libs "$@" >>"$dst" 2> >(grep -v 'Removing leading' >&2)
+tar -ch --transform 's/.*\///g' "$src" $libs "$@" >>"$dst" 2> >(grep -v 'Removing leading' >&2)
 chmod +x "$dst"
